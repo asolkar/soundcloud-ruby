@@ -13,6 +13,7 @@ module SoundCloud
 
     attr_accessor :options
     headers({"User-Agent" => USER_AGENT})
+    follow_redirects false
 
     def initialize(options={})
       store_options(options)
@@ -143,7 +144,7 @@ module SoundCloud
 
     def handle_response(refreshing_enabled=true, &block)
       response = block.call
-      if response && !response.success?
+      if response && !response.success? && !response.redirection?
         if response.code == 401 && refreshing_enabled && options_for_refresh_flow_present?
           exchange_token
           # TODO it should return the original

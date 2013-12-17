@@ -49,5 +49,20 @@ describe SoundCloud do
         expect(resp.kind).to eq('user')
       end
     end
+
+    #
+    # /resolve is indeed supposed to send back 302 with location
+    #
+    describe "#get /resolve :url => #{ENV['SOUNDCLOUD_URL']}" do
+      it "returns object corresponding to URL" do
+        resp = subject.send(:get, "/resolve", :url => "#{ENV['SOUNDCLOUD_URL']}")
+        expect(resp.location).to eq("#{ENV['RESOLVED_URL']}")
+        expect(resp.status).to eq("302 - Found")
+        resp = subject.send(:get, "#{resp.location}")
+        # pp resp.inspect
+        expect(resp.kind).to eq('track')
+      end
+    end
+
   end
 end
